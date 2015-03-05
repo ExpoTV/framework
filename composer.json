@@ -89,8 +89,8 @@
         }
     },
     "suggest": {
-        "doctrine/dbal": "Allow renaming columns and dropping SQLite columns."
-        "d11wtq/boris": "If you want extra functionality in tinker",
+        "doctrine/dbal": "Allow renaming columns and dropping SQLite columns.",
+        "borisrepl/boris": "If you want extra functionality in tinker"
     },
     "minimum-stability": "dev"
 }
