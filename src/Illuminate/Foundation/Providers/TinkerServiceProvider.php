@@ -19,12 +19,15 @@ class TinkerServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bindShared('command.tinker', function()
+		if (self::is_repl_enabled())
 		{
-			return new TinkerCommand;
-		});
+			$this->app->bindShared('command.tinker', function()
+			{
+				return new TinkerCommand;
+			});
 
-		$this->commands('command.tinker');
+			$this->commands('command.tinker');
+		}
 	}
 
 	/**
@@ -34,7 +37,16 @@ class TinkerServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('command.tinker');
+		if (self::is_repl_enabled())
+		{
+			return array('command.tinker');
+		}
+		return array();
+	}
+
+	public static function is_repl_enabled()
+	{
+		return class_exists('\\Boris\\Boris') && extension_loaded('readline') && extension_loaded('posix') && extension_loaded('pcntl');
 	}
 
 }
