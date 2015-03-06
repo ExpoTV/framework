@@ -42,6 +42,7 @@ class TinkerServiceProvider extends ServiceProvider {
 		{
 			return array('command.tinker');
 		}
+		return array();
 	}
 
 	public static function is_repl_available()
