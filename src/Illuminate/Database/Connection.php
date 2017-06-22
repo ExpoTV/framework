@@ -587,7 +587,7 @@ class Connection implements ConnectionInterface {
 		// the event that the developer needs them. We'll log time in milliseconds.
 		$time = $this->getElapsedTime($start);
 
-		$this->logQuery($query, $bindings, $time);
+		$this->logQuery($query, $bindings, $time, $this->getName());
 
 		return $result;
 	}
@@ -713,7 +713,7 @@ class Connection implements ConnectionInterface {
 	 * @param  float|null  $time
 	 * @return void
 	 */
-	public function logQuery($query, $bindings, $time = null)
+	public function logQuery($query, $bindings, $time = null, $connectionName = '')
 	{
 		if (isset($this->events))
 		{
@@ -722,7 +722,7 @@ class Connection implements ConnectionInterface {
 
 		if ( ! $this->loggingQueries) return;
 
-		$this->queryLog[] = compact('query', 'bindings', 'time');
+		$this->queryLog[] = compact('query', 'bindings', 'time', 'connectionName');
 	}
 
 	/**
