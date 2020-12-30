@@ -96,7 +96,8 @@ class SqsQueue extends Queue implements QueueInterface {
 			array('QueueUrl' => $queue, 'AttributeNames' => array('ApproximateReceiveCount'))
 		);
 
-		if (count($response['Messages']) > 0)
+		if (is_array($response['Messages']) &&
+            count($response['Messages']) > 0)
 		{
 			return new SqsJob($this->container, $this->sqs, $queue, $response['Messages'][0]);
 		}
