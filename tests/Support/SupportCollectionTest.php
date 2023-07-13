@@ -270,6 +270,8 @@ class SupportCollectionTest extends PHPUnit_Framework_TestCase {
 	{
 		$data = new Collection(array(array('name' => 'taylor', 'email' => 'foo'), array('name' => 'dayle', 'email' => 'bar')));
 		$this->assertEquals('foobar', $data->implode('email'));
+		$this->assertEquals('foobar', $data->implode('email', ''));
+		$this->assertEquals('foobar', $data->implode('email', null));
 		$this->assertEquals('foo,bar', $data->implode('email', ','));
 	}
 
@@ -420,6 +422,13 @@ class SupportCollectionTest extends PHPUnit_Framework_TestCase {
 	{
 		$c = new Collection();
 		$this->assertEquals(0, $c->sum('foo'));
+	}
+
+
+	public function testCanSumValuesWithoutACallback()
+	{
+		$c = new Collection(array(1, 2, 3, 4, 5));
+		$this->assertEquals(15, $c->sum());
 	}
 
 

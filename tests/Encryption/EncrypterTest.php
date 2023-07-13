@@ -24,6 +24,7 @@ class EncrypterTest extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @expectedException Illuminate\Encryption\DecryptException
+	 * @expectedExceptionMessage Invalid data.
 	 */
 	public function testExceptionThrownWhenPayloadIsInvalid()
 	{

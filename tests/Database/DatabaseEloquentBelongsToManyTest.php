@@ -180,6 +180,38 @@ class DatabaseEloquentBelongsToManyTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testAttachInsertsPivotTableRecordWithACreatedAtTimestamp()
+	{
+		$relation = $this->getMock('Illuminate\Database\Eloquent\Relations\BelongsToMany', array('touchIfTouching'), $this->getRelationArguments());
+		$relation->withPivot('created_at');
+		$query = m::mock('stdClass');
+		$query->shouldReceive('from')->once()->with('user_role')->andReturn($query);
+		$query->shouldReceive('insert')->once()->with(array(array('user_id' => 1, 'role_id' => 2, 'foo' => 'bar', 'created_at' => 'time')))->andReturn(true);
+		$relation->getQuery()->shouldReceive('getQuery')->andReturn($mockQueryBuilder = m::mock('StdClass'));
+		$mockQueryBuilder->shouldReceive('newQuery')->once()->andReturn($query);
+		$relation->getParent()->shouldReceive('freshTimestamp')->once()->andReturn('time');
+		$relation->expects($this->once())->method('touchIfTouching');
+
+		$relation->attach(2, array('foo' => 'bar'));
+	}
+
+
+	public function testAttachInsertsPivotTableRecordWithAnUpdatedAtTimestamp()
+	{
+		$relation = $this->getMock('Illuminate\Database\Eloquent\Relations\BelongsToMany', array('touchIfTouching'), $this->getRelationArguments());
+		$relation->withPivot('updated_at');
+		$query = m::mock('stdClass');
+		$query->shouldReceive('from')->once()->with('user_role')->andReturn($query);
+		$query->shouldReceive('insert')->once()->with(array(array('user_id' => 1, 'role_id' => 2, 'foo' => 'bar', 'updated_at' => 'time')))->andReturn(true);
+		$relation->getQuery()->shouldReceive('getQuery')->andReturn($mockQueryBuilder = m::mock('StdClass'));
+		$mockQueryBuilder->shouldReceive('newQuery')->once()->andReturn($query);
+		$relation->getParent()->shouldReceive('freshTimestamp')->once()->andReturn('time');
+		$relation->expects($this->once())->method('touchIfTouching');
+
+		$relation->attach(2, array('foo' => 'bar'));
+	}
+
+
 	public function testDetachRemovesPivotTableRecord()
 	{
 		$relation = $this->getMock('Illuminate\Database\Eloquent\Relations\BelongsToMany', array('touchIfTouching'), $this->getRelationArguments());
@@ -348,6 +380,38 @@ class DatabaseEloquentBelongsToManyTest extends PHPUnit_Framework_TestCase {
 		$collection->shouldReceive('modelKeys')->once()->andReturn(array(1, 2, 3));
 		$relation->expects($this->once())->method('formatSyncList')->with(array(1, 2, 3))->will($this->returnValue(array(1 => array(),2 => array(),3 => array())));
 		$relation->sync($collection);
+	}
+
+
+	public function testWherePivotParamsUsedForNewQueries()
+	{
+		$relation = $this->getMock('Illuminate\Database\Eloquent\Relations\BelongsToMany', ['attach', 'detach', 'touchIfTouching', 'formatSyncList'], $this->getRelationArguments());
+
+		// we expect to call $relation->wherePivot()
+		$relation->getQuery()->shouldReceive('where')->once()->andReturn($relation);
+
+		// Our sync() call will produce a new query
+		$mockQueryBuilder = m::mock('stdClass');
+		$query            = m::mock('stdClass');
+		$relation->getQuery()->shouldReceive('getQuery')->andReturn($mockQueryBuilder);
+		$mockQueryBuilder->shouldReceive('newQuery')->once()->andReturn($query);
+
+		// BelongsToMany::newPivotStatement() sets this
+		$query->shouldReceive('from')->once()->with('user_role')->andReturn($query);
+
+		// BelongsToMany::newPivotQuery() sets this
+		$query->shouldReceive('where')->once()->with('user_id', 1)->andReturn($query);
+
+		// This is our test! The wherePivot() params also need to be called
+		$query->shouldReceive('where')->once()->with('foo', '=', 'bar')->andReturn($query);
+
+		// This is so $relation->sync() works
+		$query->shouldReceive('lists')->once()->with('role_id')->andReturn([1, 2, 3]);
+		$relation->expects($this->once())->method('formatSyncList')->with([1, 2, 3])->will($this->returnValue([1 => [],2 => [],3 => []]));
+
+
+		$relation = $relation->wherePivot('foo', '=', 'bar'); // these params are to be stored
+		$relation->sync([1,2,3]); // triggers the whole process above
 	}
 
 
