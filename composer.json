@@ -12,7 +12,6 @@
     "require": {
         "php": ">=5.4.0",
         "classpreloader/classpreloader": "~1.0.2",
-        "d11wtq/boris": "~1.0",
         "ircmaxell/password-compat": "~1.0",
         "filp/whoops": "1.1.*",
         "jeremeamia/superclosure": "~1.0.1",
@@ -90,7 +89,8 @@
         }
     },
     "suggest": {
-        "doctrine/dbal": "Allow renaming columns and dropping SQLite columns."
+        "doctrine/dbal": "Allow renaming columns and dropping SQLite columns.",
+        "borisrepl/boris": "If you want extra functionality in tinker"
     },
     "minimum-stability": "dev"
 }

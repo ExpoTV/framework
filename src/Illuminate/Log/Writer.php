@@ -86,8 +86,15 @@ class Writer {
 	public function useFiles($path, $level = 'debug')
 	{
 		$level = $this->parseLevel($level);
-
-		$this->monolog->pushHandler($handler = new StreamHandler($path, $level));
+		
+		if(class_exists('\Expo\Utilities\LogHandlers\ResilientStreamHandler'))
+		{
+		    $this->monolog->pushHandler($handler = new \Expo\Utilities\LogHandlers\ResilientStreamHandler($path, $level));
+		}
+		else
+		{
+		    $this->monolog->pushHandler($handler = new StreamHandler($path, $level));
+		}
 
 		$handler->setFormatter($this->getDefaultFormatter());
 	}
